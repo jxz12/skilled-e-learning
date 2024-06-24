@@ -1,15 +1,26 @@
 const auth = require("../auth");
+import { headers } from 'next/headers'
 
-export async function GET(request) {
-  verified = auth.verifyToken(request.token);
-  if (verified) {
-    return Response.json([
-      { title: "cute cat video", url: "youtube.com/123" },
-      { title: "funny dog video", url: "youtube.com/456" },
-    ]);
-  } else {
+const videos = {
+  jonathan: [
+    { title: "cute cat video", url: "youtube.com/123" },
+    { title: "funny dog video", url: "youtube.com/456" },
+  ],
+  halden: [
+    { title: "impressive bird video", url: "youtube.com/789" },
+  ],
+};
+
+export async function GET() {
+  const headersList = headers();
+  const token = headersList.get('authorization');
+  try {
+    const payload = auth.verifyToken(token);
+    const username = payload["username"];
+    return Response.json(videos[username]);
+  } catch (error) {
     return Response.json(
-      "not authorized, could not verify token",
+      error,
       { status: 403 },
     );
   }

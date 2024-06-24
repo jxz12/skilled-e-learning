@@ -5,6 +5,7 @@ const secret = process.env.JWT_SECRET;
 const users = [];
 
 export function register(username, password) {
+  console.log(users);
   if (username in users) {
     return false;
   }
@@ -12,6 +13,7 @@ export function register(username, password) {
   return true;
 }
 export function login(username, password) {
+  console.log(users);
   if (users[username] !== password) {
     return false;
   }
@@ -24,3 +26,15 @@ export function createToken(username) {
   });
   return token;
 };
+
+export function verifyToken(token) {
+  if (!token.startsWith("Bearer ")) {
+    throw new Error("no Bearer in header");
+  }
+  // Remove Bearer from string
+  token = token.slice(7, token.length).trimLeft();
+  if (!token) {
+    throw new Error("no token after Bearer");
+  }
+  return jwt.verify(token, secret);
+}
